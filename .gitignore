@@ -1,0 +1,13 @@
+﻿# Dependencias y compilados (se regeneran solos)
+node_modules
+dist
+src-tauri/target
+src-tauri/gen
+
+# Herramientas locales
+.claude
+*.log
+.DS_Store
+
+# Claves de firma de actualizaciones: nunca al repositorio
+*.key

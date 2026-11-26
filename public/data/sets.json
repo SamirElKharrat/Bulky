@@ -1,0 +1,38 @@
+[
+  {
+    "id": "OGN",
+    "number": 1,
+    "base": 298,
+    "printings": 353
+  },
+  {
+    "id": "SFD",
+    "number": 2,
+    "base": 221,
+    "printings": 288
+  },
+  {
+    "id": "UNL",
+    "number": 3,
+    "base": 219,
+    "printings": 288
+  },
+  {
+    "id": "VEN",
+    "number": 4,
+    "base": 166,
+    "printings": 237
+  },
+  {
+    "id": "RAD",
+    "number": 5,
+    "base": 167,
+    "printings": 219
+  },
+  {
+    "id": "OGS",
+    "number": null,
+    "base": 24,
+    "printings": 24
+  }
+]

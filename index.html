@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bulky</title>
+    <link rel="icon" href="/bulky.svg" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Martian+Mono:wght@400;500;600&display=swap" />
+    <script>
+      // Tema y color guardados, para que la pantalla de carga ya salga con ellos.
+      try {
+        var t = localStorage.getItem("bs-theme");
+        if (t && t !== "system") document.documentElement.setAttribute("data-theme", t);
+        var a = localStorage.getItem("bs-accent");
+        if (a) document.documentElement.style.setProperty("--splash-acc", a);
+      } catch (e) {}
+    </script>
+    <style>
+      html, body { margin: 0; background: #ECEDEF; }
+      #splash { position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px;
+        background: #ECEDEF; color: #17181C; font-family: Archivo, system-ui, sans-serif; transition: opacity .35s ease; }
+      #splash.out { opacity: 0; pointer-events: none; }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]), :root:not([data-theme="light"]) body, :root:not([data-theme="light"]) #splash { background: #141518; color: #ECEDF0; }
+      }
+      :root[data-theme="dark"], :root[data-theme="dark"] body, :root[data-theme="dark"] #splash { background: #141518; color: #ECEDF0; }
+      .sp-ring { position: relative; width: 120px; height: 120px; }
+      .sp-orbit { position: absolute; inset: 0; animation: sp-spin 2.4s cubic-bezier(.6,.1,.4,.9) infinite; }
+      .sp-orbit img { position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; margin: -11px; filter: drop-shadow(0 2px 3px rgba(0,0,0,.35)); }
+      .sp-core { position: absolute; left: 50%; top: 50%; width: 56px; height: 56px; margin: -28px; animation: sp-pulse 1.2s ease-in-out infinite alternate; }
+      .sp-name { font-weight: 800; font-stretch: 75%; font-size: 1.6rem; letter-spacing: .01em; display: flex; align-items: center; gap: 10px; }
+      .sp-name i { width: 20px; height: 16px; border: 2.5px solid var(--splash-acc, #4558C9); border-top-width: 5px; border-radius: 2px; }
+      .sp-sub { font: 500 .75rem "Martian Mono", ui-monospace, monospace; opacity: .6; margin-top: -16px; }
+      @keyframes sp-spin { to { transform: rotate(360deg); } }
+      @keyframes sp-pulse { from { transform: scale(.85); opacity: .7; } to { transform: scale(1.08); opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) { .sp-orbit, .sp-core { animation-duration: 6s; } }
+    </style>
+  </head>
+  <body>
+    <div id="splash" role="status" aria-label="Cargando Bulky">
+      <div class="sp-ring" aria-hidden="true">
+        <div class="sp-orbit">
+          <img src="/assets/icons/glyph-rune_fury.svg" alt="" style="transform: rotate(0deg) translateY(-48px)" />
+          <img src="/assets/icons/glyph-rune_calm.svg" alt="" style="transform: rotate(60deg) translateY(-48px)" />
+          <img src="/assets/icons/glyph-rune_mind.svg" alt="" style="transform: rotate(120deg) translateY(-48px)" />
+          <img src="/assets/icons/glyph-rune_body.svg" alt="" style="transform: rotate(180deg) translateY(-48px)" />
+          <img src="/assets/icons/glyph-rune_chaos.svg" alt="" style="transform: rotate(240deg) translateY(-48px)" />
+          <img src="/assets/icons/glyph-rune_order.svg" alt="" style="transform: rotate(300deg) translateY(-48px)" />
+        </div>
+        <img class="sp-core" src="/bulky.svg" alt="" />
+      </div>
+      <div class="sp-name">Bulky</div>
+      <div class="sp-sub">Cargando tu colección…</div>
+    </div>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <!-- Bulky: Gromp en silueta negra. El borde blanco hace que se vea también sobre fondos oscuros (barra de tareas). -->
+  <g fill="#17181C" stroke="#FFFFFF" stroke-width="10" stroke-linejoin="round" paint-order="stroke">
+    <path d="M26 164C26 112 70 98 128 98s102 14 102 66c0 42-40 60-102 60S26 206 26 164Z"/>
+    <circle cx="80" cy="96" r="38"/>
+    <circle cx="176" cy="96" r="38"/>
+    <path d="M40 214c4-14 30-18 46-8l6 14H34Z"/>
+    <path d="M216 214c-4-14-30-18-46-8l-6 14h58Z"/>
+  </g>
+  <g fill="#17181C">
+    <path d="M26 164C26 112 70 98 128 98s102 14 102 66c0 42-40 60-102 60S26 206 26 164Z"/>
+    <circle cx="80" cy="96" r="38"/>
+    <circle cx="176" cy="96" r="38"/>
+    <path d="M40 214c4-14 30-18 46-8l6 14H34Z"/>
+    <path d="M216 214c-4-14-30-18-46-8l-6 14h58Z"/>
+  </g>
+  <circle cx="80" cy="94" r="22" fill="#FFFFFF"/>
+  <circle cx="176" cy="94" r="22" fill="#FFFFFF"/>
+  <circle cx="84" cy="96" r="10" fill="#17181C"/>
+  <circle cx="172" cy="96" r="10" fill="#17181C"/>
+  <circle cx="88" cy="92" r="3.2" fill="#FFFFFF"/>
+  <circle cx="176" cy="92" r="3.2" fill="#FFFFFF"/>
+  <path d="M46 156q8 6 16 4q66 34 132 0q8 2 16-4" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

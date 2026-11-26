@@ -1,0 +1,65 @@
+{
+  "_info": "Ediciones especiales que no aparecen en la galería oficial. Se mantienen a mano. 'image' es una ruta dentro de public/ o una URL. Códigos como vienen impresos en la carta cuando se conocen (T1S-001).",
+  "products": [
+    {
+      "code": "KDA",
+      "name": "Riftbound x K/DA: Couture Collection",
+      "released": "2026-11",
+      "source": "https://merch.riotgames.com/en-us/product/riftbound-kda-couture-collection/",
+      "notes": "Arte de Fortiche",
+      "cards": [
+        { "n": 1, "name": "Evelynn, Agony's Embrace", "type": "legend", "verified": false },
+        { "n": 2, "name": "Ahri, Nine-Tailed Fox", "type": "legend", "verified": false },
+        { "n": 3, "name": "Akali, Rogue Assassin", "type": "legend", "verified": false },
+        { "n": 4, "name": "Kai'Sa, Daughter of the Void", "type": "legend", "verified": false },
+        { "n": 5, "name": "Packed Amphitheater", "type": "battlefield", "orientation": "landscape", "verified": false }
+      ]
+    },
+    {
+      "code": "T1S",
+      "name": "Riftbound x T1 2025 Worlds Champion · Signature Edition",
+      "released": "2026-11",
+      "serialMax": 2025,
+      "languages": ["en", "zh", "ko"],
+      "source": "https://riftbound.leagueoflegends.com/en-us/news/announcements/the-riftbound-x-t1-2025-worlds-champion-collection/",
+      "notes": "Serializada 1–2025",
+      "cards": [
+        { "n": 1, "name": "Ambessa, The Wolf", "player": "Doran", "type": "unit", "domains": ["body"], "energy": 4, "might": 4, "image": "/assets/specials/cards/T1S-001.jpg", "verified": true },
+        { "n": 2, "name": "Xin Zhao, Vigilant", "player": "Oner", "type": "unit", "domains": ["order"], "energy": 3, "might": 4, "image": "/assets/specials/cards/T1S-002.jpg", "verified": true },
+        { "n": 3, "name": "Galio, Indefatigable", "player": "Faker", "type": "unit", "domains": ["order"], "energy": 3, "might": 6, "image": "/assets/specials/cards/T1S-003.jpg", "verified": true },
+        { "n": 4, "name": "Miss Fortune, Buccaneer", "player": "Gumayusi", "type": "unit", "domains": ["chaos"], "energy": 4, "might": 4, "image": "/assets/specials/cards/T1S-004.jpg", "verified": true },
+        { "n": 5, "name": "Seraphine, Not Alone", "player": "Keria", "type": "unit", "domains": ["order"], "energy": 5, "might": 1, "image": "/assets/specials/cards/T1S-005.jpg", "verified": true }
+      ]
+    },
+    {
+      "code": "T1A",
+      "name": "Riftbound x T1 2025 Worlds Champion · Player Bundle",
+      "released": "2026-11",
+      "source": "https://riftbound.leagueoflegends.com/en-us/news/announcements/the-riftbound-x-t1-2025-worlds-champion-collection/",
+      "notes": "Alt art de League Splash Team",
+      "cards": [
+        { "n": 1, "name": "Ambessa, The Wolf", "player": "Doran", "type": "unit", "domains": ["body"], "energy": 4, "might": 4, "image": "/assets/specials/cards/T1A-001.jpg", "verified": true },
+        { "n": 2, "name": "Xin Zhao, Vigilant", "player": "Oner", "type": "unit", "domains": ["order"], "energy": 3, "might": 4, "image": "/assets/specials/cards/T1A-002.jpg", "verified": true },
+        { "n": 3, "name": "Galio, Indefatigable", "player": "Faker", "type": "unit", "domains": ["order"], "energy": 3, "might": 6, "image": "/assets/specials/cards/T1A-003.jpg", "verified": true },
+        { "n": 4, "name": "Miss Fortune, Buccaneer", "player": "Gumayusi", "type": "unit", "domains": ["chaos"], "energy": 4, "might": 4, "image": "/assets/specials/cards/T1A-004.jpg", "verified": true },
+        { "n": 5, "name": "Seraphine, Not Alone", "player": "Keria", "type": "unit", "domains": ["order"], "energy": 5, "might": 1, "image": "/assets/specials/cards/T1A-005.jpg", "verified": true }
+      ]
+    },
+    {
+      "code": "W26",
+      "name": "Riftbound x Worlds 2026",
+      "released": "2026-11",
+      "source": "https://playriftbound.com/en-us/news/announcements/riftbounds-2026-drawings",
+      "notes": "Contenido por confirmar",
+      "cards": []
+    },
+    {
+      "code": "GOR",
+      "name": "Gift of the Rift",
+      "released": "2026-12-04",
+      "cards": [
+        { "n": 1, "name": "Akali (promo)", "type": "unit", "domains": [], "languages": ["en"], "verified": false }
+      ]
+    }
+  ]
+}
