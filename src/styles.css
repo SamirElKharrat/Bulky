@@ -873,3 +873,26 @@ tr.sel td { background: color-mix(in srgb, var(--acc) 10%, transparent); }
 .bk-opt:hover { border-color: var(--app-acc, var(--acc)); background: color-mix(in srgb, var(--app-acc, var(--acc)) 6%, var(--surface)); }
 .bk-opt span { font-size: .8rem; color: var(--muted); }
 .bk-warn { color: var(--bad) !important; }
+
+/* ---------- Ajustes (diseño en filas) ---------- */
+.settings-modal { width: min(620px, 100%); border-left: 0; padding: 20px 22px 22px; gap: 18px; }
+.set-sec { display: flex; flex-direction: column; gap: 6px; }
+.set-sec h3 { margin: 0; }
+.set-box { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.set-line { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 10px 14px; flex-wrap: wrap; }
+.set-line + .set-line, .set-box > .set-msg { border-top: 1px solid var(--line); }
+.set-name { display: flex; flex-direction: column; font-weight: 600; font-size: .9rem; min-width: 0; }
+.set-name small { font-weight: 400; font-size: .76rem; color: var(--muted); }
+.set-line .toggle button { font-size: .8rem; padding: 5px 10px; }
+.swatches.sm { gap: 6px; flex-wrap: nowrap; }
+.swatches.sm .sw { width: 22px; height: 22px; border-width: 2px; }
+.swatches.sm .sw.on { box-shadow: inset 0 2px 4px rgba(0,0,0,.3), 0 0 0 2px var(--ink); }
+.set-msg { margin: 0; padding: 8px 14px; font-size: .8rem; color: var(--muted); }
+.set-msg.ok { color: var(--ok); }
+.set-msg.bad { color: var(--bad); }
+.set-new { background: color-mix(in srgb, var(--app-acc, var(--acc)) 8%, var(--surface)); }
+.changelog { width: min(440px, 100%); max-height: 80vh; overflow-y: auto; gap: 14px; }
+.log-ver { display: flex; flex-direction: column; gap: 6px; }
+.log-tag { align-self: flex-start; font-size: .72rem; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: var(--surface-2); border: 1px solid var(--line-2); }
+.log-ver ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; font-size: .9rem; }
+@media (max-width: 640px) { .swatches.sm { flex-wrap: wrap; } }

@@ -31,6 +31,11 @@ export function SettingsPanel({ cat, onClose }: { cat: Catalog | null; onClose: 
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
+  const [showLog, setShowLog] = useState(false);
+  const [dataMsg, setDataMsg] = useState<{ text: string; bad?: boolean } | null>(null);
+  const upd = useUpdates();
+  const fmt = (d: string | number) => new Date(d).toLocaleString("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+
   return (
     <div className="overlay" onClick={onClose} role="presentation">
     <div className="modal settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-t" onClick={(e) => e.stopPropagation()}>
@@ -38,96 +43,110 @@ export function SettingsPanel({ cat, onClose }: { cat: Catalog | null; onClose: 
         <h2 id="settings-t">Ajustes</h2>
         <button className="btn btn-quiet btn-sm close-x" onClick={onClose} aria-label="Cerrar ajustes">✕</button>
       </div>
-      <div className="set-row">
-        <span className="lbl">Tema</span>
-        <div className="toggle" role="group" aria-label="Tema">
-          {(["system", "light", "dark"] as Theme[]).map((t) => (
-            <button key={t} aria-pressed={theme === t} onClick={() => setTheme(t)}>{t === "system" ? "Auto" : t === "light" ? "Claro" : "Oscuro"}</button>
-          ))}
+
+      <section className="set-sec">
+        <h3 className="lbl">Apariencia</h3>
+        <div className="set-box">
+          <div className="set-line">
+            <span className="set-name">Tema</span>
+            <div className="toggle" role="group" aria-label="Tema">
+              {(["system", "light", "dark"] as Theme[]).map((t) => (
+                <button key={t} aria-pressed={theme === t} onClick={() => setTheme(t)}>{t === "system" ? "Auto" : t === "light" ? "Claro" : "Oscuro"}</button>
+              ))}
+            </div>
+          </div>
+          <div className="set-line">
+            <span className="set-name">Color</span>
+            <div className="swatches sm" role="radiogroup" aria-label="Color de la app">
+              {COLL_COLORS.map((c) => <button key={c} role="radio" aria-checked={accent === c} className={`sw${accent === c ? " on" : ""}`} style={{ background: c }} onClick={() => setAccent(c)} aria-label={`Color ${c}`} />)}
+            </div>
+          </div>
+          <div className="set-line">
+            <span className="set-name">Tamaño del texto</span>
+            <div className="toggle" role="group" aria-label="Tamaño del texto">
+              {TEXT_SIZES.map((t) => <button key={t.id} aria-pressed={textSize === t.id} onClick={() => setTextSize(t.id)}>{t.label}</button>)}
+            </div>
+          </div>
         </div>
-      </div>
-      <div className="set-row">
-        <span className="lbl">Color de la app</span>
-        <div className="swatches" role="radiogroup" aria-label="Color de la app">
-          {COLL_COLORS.map((c) => <button key={c} role="radio" aria-checked={accent === c} className={`sw${accent === c ? " on" : ""}`} style={{ background: c }} onClick={() => setAccent(c)} aria-label={`Color ${c}`} />)}
+      </section>
+
+      <section className="set-sec">
+        <h3 className="lbl">Precios de Cardmarket</h3>
+        <div className="set-box">
+          <div className="set-line">
+            <span className="set-name">Precio que se muestra</span>
+            <div className="toggle" role="group" aria-label="Precio de Cardmarket">
+              {PROFILES.map((pr) => <button key={pr.id} aria-pressed={profile === pr.id} onClick={() => setProfile(pr.id)}>{pr.label}</button>)}
+            </div>
+          </div>
+          <div className="set-line">
+            <span className="set-name">Actualizados<small>{createdAt ? `${fmt(createdAt)} · ${map.size} cartas` : status === "loading" ? "Cargando…" : "Sin descargar"}</small></span>
+            {canRefreshPrices()
+              ? <button className="btn btn-sm" disabled={status === "updating" || !cat} onClick={() => cat && refresh(cat)}>{status === "updating" ? "Descargando…" : "Actualizar"}</button>
+              : <small className="muted">Solo en la app de escritorio</small>}
+          </div>
+          {error && <p className="set-msg bad">{error}</p>}
         </div>
-      </div>
-      <div className="set-row">
-        <span className="lbl">Tamaño del texto</span>
-        <div className="toggle" role="group" aria-label="Tamaño del texto">
-          {TEXT_SIZES.map((s) => <button key={s.id} aria-pressed={textSize === s.id} onClick={() => setTextSize(s.id)}>{s.label}</button>)}
+      </section>
+
+      <section className="set-sec">
+        <h3 className="lbl">Tus datos</h3>
+        <div className="set-box">
+          <div className="set-line">
+            <span className="set-name">Copia de seguridad<small>Cartas, mazos, ventas, fotos y ajustes</small></span>
+            <div className="row" style={{ gap: 6 }}><BackupControls small onDone={(text, bad) => setDataMsg({ text, bad })} /></div>
+          </div>
+          {dataMsg && <p className={`set-msg${dataMsg.bad ? " bad" : " ok"}`}>{dataMsg.text}</p>}
         </div>
-      </div>
-      <div className="set-row">
-        <span className="lbl">Precio de Cardmarket</span>
-        <div className="toggle" role="group" aria-label="Precio de Cardmarket">
-          {PROFILES.map((p) => <button key={p.id} aria-pressed={profile === p.id} onClick={() => setProfile(p.id)}>{p.label}</button>)}
+      </section>
+
+      <section className="set-sec">
+        <h3 className="lbl">Acerca de</h3>
+        <div className="set-box">
+          <div className="set-line">
+            <span className="set-name">Bulky {APP_VERSION}<small>{cat ? `Catálogo de ${cat.cards.length} cartas · ${new Date(cat.fetchedAt).toLocaleDateString("es-ES")}` : ""}</small></span>
+            <div className="row" style={{ gap: 6 }}>
+              <button className="btn btn-sm" onClick={() => setShowLog(true)}>Novedades</button>
+              <button className="btn btn-sm" onClick={upd.check} disabled={upd.status === "checking"}>{upd.status === "checking" ? "Buscando…" : "Buscar actualizaciones"}</button>
+            </div>
+          </div>
+          {upd.status === "latest" && <p className="set-msg ok">Tienes la última versión.</p>}
+          {upd.status === "error" && upd.error && <p className="set-msg">{upd.error}</p>}
+          {upd.status === "available" && upd.info && (
+            <div className="set-line set-new">
+              <span className="set-name">Hay una versión nueva: {upd.info.version}</span>
+              <button className="btn btn-sm btn-primary" onClick={() => openExternal(upd.info!.url).catch(() => undefined)}>Descargar</button>
+            </div>
+          )}
         </div>
-      </div>
-      <div className="set-row">
-        <span className="lbl">Precios</span>
-        <span className="hint">
-          {createdAt ? `Del ${new Date(createdAt).toLocaleString("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}` : status === "loading" ? "Cargando…" : "Sin descargar"}
-          {map.size ? ` · ${map.size} cartas con precio` : ""}
-        </span>
-        {canRefreshPrices() ? (
-          <button className="btn btn-sm btn-primary" disabled={status === "updating" || !cat} onClick={() => cat && refresh(cat)}>
-            {status === "updating" ? "Descargando…" : "Actualizar precios"}
-          </button>
-        ) : <span className="hint">Para actualizarlos aquí, usa la app de escritorio.</span>}
-        {error && <span className="hint" style={{ color: "var(--bad)" }}>{error}</span>}
-      </div>
-      {cat && <span className="hint">Catálogo: {cat.cards.length} cartas · {new Date(cat.fetchedAt).toLocaleDateString("es-ES")}</span>}
-      <DataSection />
-      <UpdatesSection />
+      </section>
+      {showLog && <ChangelogDialog onClose={() => setShowLog(false)} />}
     </div>
     </div>
   );
 }
 
-/** Versión instalada, buscar una nueva y lista de cambios. */
-function UpdatesSection() {
-  const { status, info, error, check } = useUpdates();
-  const [showAll, setShowAll] = useState(false);
-  const log = showAll ? CHANGELOG : CHANGELOG.slice(0, 1);
+/** Ventana con la lista de cambios de cada versión. */
+function ChangelogDialog({ onClose }: { onClose: () => void }) {
+  useEffect(() => {
+    const k = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopPropagation(); onClose(); } };
+    window.addEventListener("keydown", k, true);
+    return () => window.removeEventListener("keydown", k, true);
+  }, [onClose]);
   return (
-    <div className="set-row set-updates">
-      <span className="lbl">Actualizaciones</span>
-      <div className="upd-head">
-        <span>Tienes la versión <b className="mono">{APP_VERSION}</b></span>
-        <button className="btn btn-sm" onClick={check} disabled={status === "checking"}>{status === "checking" ? "Buscando…" : "Buscar actualizaciones"}</button>
-      </div>
-      {status === "latest" && <span className="hint upd-ok">Tienes la última versión.</span>}
-      {status === "error" && error && <span className="hint">{error}</span>}
-      {status === "available" && info && (
-        <div className="upd-new">
-          <b>Nueva versión {info.version} disponible</b>
-          {info.notes && <span className="upd-notes">{info.notes.replace(/[#*`]/g, "").trim()}</span>}
-          <button className="btn btn-sm btn-primary" onClick={() => openExternal(info.url).catch(() => undefined)}>Descargar</button>
+    <div className="overlay" onClick={onClose} role="presentation">
+      <div className="confirm changelog" role="dialog" aria-modal="true" aria-labelledby="log-t" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-head">
+          <h2 id="log-t">Novedades</h2>
+          <button className="btn btn-quiet btn-sm close-x" onClick={onClose} aria-label="Cerrar novedades">✕</button>
         </div>
-      )}
-      <div className="upd-log">
-        {log.map((v) => (
-          <div key={v.version}>
-            <span className="upd-v">Novedades de la {v.version}{v.version === APP_VERSION ? " · la tuya" : ""}</span>
+        {CHANGELOG.map((v) => (
+          <div key={v.version} className="log-ver">
+            <span className="log-tag mono">{v.version}{v.version === APP_VERSION ? " · tu versión" : ""}</span>
             <ul>{v.items.map((it) => <li key={it}>{it}</li>)}</ul>
           </div>
         ))}
-        {CHANGELOG.length > 1 && <button className="s-link" onClick={() => setShowAll(!showAll)}>{showAll ? "Ver menos" : "Ver versiones anteriores"}</button>}
       </div>
-    </div>
-  );
-}
-
-/** Copia de seguridad completa: cartas, colecciones, mazos, listas de venta, fotos y ajustes. */
-function DataSection() {
-  const [msg, setMsg] = useState<{ text: string; bad?: boolean } | null>(null);
-  return (
-    <div className="set-row set-updates">
-      <span className="lbl">Tus datos</span>
-      <span className="hint">La copia lo guarda todo: cartas, colecciones, mazos, listas de venta, tus fotos y tus ajustes. Al hacerla eliges dónde guardarla.</span>
-      <div className="row"><BackupControls small onDone={(text, bad) => setMsg({ text, bad })} /></div>
-      {msg && <span className="hint" style={{ color: msg.bad ? "var(--bad)" : "var(--ok)" }}>{msg.text}</span>}
     </div>
   );
 }

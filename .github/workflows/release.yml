@@ -1,0 +1,81 @@
+# Compila Bulky para Windows y Mac en los ordenadores de GitHub y sube los instaladores a una Release.
+#
+# Cómo se usa:
+#   1. Sube la versión en package.json, src-tauri/tauri.conf.json y src-tauri/Cargo.toml (por ejemplo 0.3.0).
+#   2. Haz commit y push.
+#   3. En GitHub: Actions → "Publicar versión" → Run workflow.
+#      (O crea y sube una etiqueta: git tag v0.3.0 && git push origin v0.3.0)
+#   4. Cuando termine (unos 15-20 min), en Releases aparece un borrador "Bulky v0.3.0" con:
+#        - Bulky_x.y.z_x64-setup.exe y .msi  → Windows
+#        - Bulky_x.y.z_universal.dmg         → Mac (chip Apple e Intel)
+#      Revísalo y pulsa "Publish release".
+#
+# Es gratis en repositorios públicos.
+
+name: Publicar versión
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  compilar:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - nombre: Mac
+            platform: macos-latest
+            args: --target universal-apple-darwin --bundles app,dmg
+          - nombre: Windows
+            platform: windows-latest
+            args: ""
+
+    name: ${{ matrix.nombre }}
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Instalar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          # En Mac se compila para los dos tipos de procesador (Apple e Intel) en un solo instalador
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Reutilizar lo compilado en otras versiones
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Compilar y subir a la Release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: v__VERSION__
+          releaseName: Bulky v__VERSION__
+          releaseBody: |
+            **Windows:** descarga `Bulky_…_x64-setup.exe` y ábrelo. Si sale "Windows protegió su PC", pulsa *Más información* → *Ejecutar de todas formas*.
+
+            **Mac:** descarga `Bulky_…_universal.dmg`, ábrelo y arrastra Bulky a Aplicaciones. La primera vez, haz clic derecho en Bulky → *Abrir*. Si dice que "está dañado", abre Terminal y ejecuta:
+            `xattr -cr /Applications/Bulky.app`
+
+            Versión preliminar: haz copias de seguridad desde Ajustes → Tus datos.
+          releaseDraft: true
+          prerelease: true
+          args: ${{ matrix.args }}

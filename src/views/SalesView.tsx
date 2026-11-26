@@ -4,7 +4,8 @@ import { norm } from "../core/catalog";
 import type { Card } from "../core/types";
 import { parseEntryKey, useStore } from "../core/store";
 import { eur, priceOf, usePriceProfile, usePrices } from "../core/prices";
-import { encodeShare, imageId, roundUp, type SaleItem, type SaleList, type SharePayload } from "../core/sales";
+import { encodeShare, imageId, roundUp, toShort, type SaleItem, type SaleList, type SharePayload } from "../core/sales";
+import { shareUrl } from "../core/web";
 import { HoverName, useCardSrc } from "../ui/CardTile";
 import { SharePage } from "../ui/SharePage";
 
@@ -71,15 +72,12 @@ function SaleEditor({ cat, list, openCard, onBack }: { cat: Catalog; list: SaleL
   const removeFromSale = useStore((s) => s.removeFromSale);
   const setSaleQty = useStore((s) => s.setSaleQty);
   const collections = useStore((s) => s.collections);
-  const shareBase = useStore((s) => s.shareBase);
-  const setShareBase = useStore((s) => s.setShareBase);
   const { market, final } = useSalePricing();
   const [adding, setAdding] = useState(false);
   const [preview, setPreview] = useState<SharePayload | null>(null);
   const [link, setLink] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [confirmDel, setConfirmDel] = useState(false);
-  const [base, setBase] = useState(shareBase);
 
   const total = list.items.reduce((a, it) => a + final(it, list.round) * it.qty, 0);
   const copies = list.items.reduce((a, it) => a + it.qty, 0);
@@ -96,10 +94,10 @@ function SaleEditor({ cat, list, openCard, onBack }: { cat: Catalog; list: SaleL
   // El enlace se regenera cuando cambia la lista: siempre comparte la versión actual.
   useEffect(() => {
     let alive = true;
-    if (!shareBase || !list.items.length) { setLink(null); return; }
-    payload().then(encodeShare).then((code) => { if (alive) setLink(`${shareBase.replace(/\/?(share\.html)?$/, "")}/share.html#${code}`); });
+    if (!list.items.length) { setLink(null); return; }
+    payload().then((p) => encodeShare(toShort(p))).then((code) => { if (alive) setLink(shareUrl(code)); });
     return () => { alive = false; };
-  }, [list, shareBase]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [list]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const copyLink = async () => {
     if (!link) return;
@@ -175,18 +173,8 @@ function SaleEditor({ cat, list, openCard, onBack }: { cat: Catalog; list: SaleL
           <div className="field"><span className="lbl">Total</span><span className="sale-total">{eur(total)}</span></div>
           <div className="field">
             <span className="lbl">Enlace para compartir</span>
-            {shareBase ? (
-              link ? <><div className="link-box">{link.length > 90 ? `${link.slice(0, 60)}…${link.slice(-20)}` : link}</div><button className="btn btn-sm btn-primary" onClick={copyLink}>Copiar enlace</button></>
-                : <span className="hint">Añade cartas para crear el enlace.</span>
-            ) : (
-              <>
-                <span className="hint">Falta publicar la página pública (gratis, una sola vez). Pega aquí su dirección cuando la tengas:</span>
-                <div className="row" style={{ flexWrap: "nowrap" }}>
-                  <input type="text" value={base} onChange={(e) => setBase(e.target.value)} placeholder="https://tu-bulksort.pages.dev" aria-label="Dirección de la página pública" />
-                  <button className="btn btn-sm" disabled={!/^https:\/\/\S+$/.test(base.trim())} onClick={() => setShareBase(base.trim())}>Guardar</button>
-                </div>
-              </>
-            )}
+            {link ? <><div className="link-box">{link.length > 90 ? `${link.slice(0, 60)}…${link.slice(-20)}` : link}</div><button className="btn btn-sm btn-primary" onClick={copyLink}>Copiar enlace</button></>
+              : <span className="hint">Añade cartas para crear el enlace.</span>}
             <button className="btn btn-sm" disabled={!list.items.length} onClick={async () => setPreview(await payload())}>Ver como el comprador</button>
           </div>
         </aside>

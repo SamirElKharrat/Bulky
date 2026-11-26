@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { GITHUB_REPO } from "./web";
 
 /** Versión instalada. */
 export const APP_VERSION = __APP_VERSION__;
@@ -7,28 +8,27 @@ export const APP_VERSION = __APP_VERSION__;
  * Repositorio de GitHub donde se publican las versiones ("usuario/repositorio").
  * Vacío hasta que exista: entonces "Buscar actualizaciones" avisa de que aún no hay sitio configurado.
  */
-export const UPDATE_REPO = "";
+export const UPDATE_REPO = GITHUB_REPO;
 
 /** Lista de cambios que se ve en Ajustes. La primera es la versión actual. */
 export const CHANGELOG: { version: string; items: string[] }[] = [
   {
     version: "0.2.0",
     items: [
-      "Nuevo nombre: Bulky.",
-      "Buscar (Ctrl F): busca una carta o pega una lista entera y mira qué tienes y dónde está.",
-      "En Buscar puedes quitar o dejar cada carta y moverlas, venderlas o eliminarlas de golpe, con Deshacer.",
-      "Colecciones: nueva barra de selección y opción de eliminar cartas.",
-      "Añadir cartas: aviso si sales con cartas sin guardar; los botones Añadir y Vaciar están arriba.",
-      "Ficha de carta más clara, con el coste, la fuerza y los símbolos del texto como iconos.",
-      "El chino aparece como CN.",
-      "Pantalla de carga al abrir la app.",
-      "Ajustes: versión instalada, novedades y buscar actualizaciones.",
+      "Nuevo nombre e icono: Bulky",
+      "Buscador de cartas y listas (Ctrl F)",
+      "Quitar, mover o vender cartas en bloque",
+      "Eliminar cartas desde Colecciones",
+      "Copia de seguridad completa",
+      "Ficha de carta más clara",
+      "Aviso al salir de Añadir cartas",
+      "El chino sale como CN",
     ],
   },
   {
     version: "0.1.0",
     items: [
-      "Primera versión: expansiones, añadir cartas por código, colecciones, mazos, precios de Cardmarket, listas de venta y noticias.",
+      "Primera versión",
     ],
   },
 ];

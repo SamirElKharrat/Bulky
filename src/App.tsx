@@ -17,6 +17,7 @@ import { usePrices } from "./core/prices";
 import { saveAddList, useAddList } from "./core/addList";
 import { DestinationDialog } from "./ui/CollectionDialog";
 import { BulkyLogo } from "./ui/icons";
+import { SEARCH_SHORTCUT } from "./core/web";
 
 type View = { name: "home" } | { name: "set"; id: string } | { name: "add" } | { name: "search" } | { name: "collection" } | { name: "decks" } | { name: "sales" } | { name: "news" } | { name: "soon"; title: string; text: string };
 
@@ -111,7 +112,7 @@ export default function App() {
         <nav className="nav" aria-label="Secciones">
           {nav("Expansiones", { name: "home" }, view.name === "home" || view.name === "set")}
           {nav("Añadir cartas", { name: "add" }, view.name === "add")}
-          {nav("Buscar", { name: "search" }, view.name === "search", <span className="kbd">Ctrl F</span>)}
+          {nav("Buscar", { name: "search" }, view.name === "search", <span className="kbd">{SEARCH_SHORTCUT}</span>)}
           {nav("Colecciones", { name: "collection" }, view.name === "collection", <span className="count">{copies}</span>)}
           {nav("Mazos", { name: "decks" }, view.name === "decks", <span className="count">{decks}</span>)}
           {nav("Ventas", { name: "sales" }, view.name === "sales", <span className="count">{sales}</span>)}

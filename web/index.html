@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Bulky · Tu bulk de Riftbound, ordenado</title>
+    <meta name="description" content="Bulky es una app gratuita para ordenar tu bulk de Riftbound: añade cartas por código, sepáralas en colecciones, mira su precio en Cardmarket y monta mazos con lo que tienes." />
+    <meta property="og:title" content="Bulky · Tu bulk de Riftbound, ordenado" />
+    <meta property="og:description" content="App gratuita para ordenar tu colección de Riftbound. Prerelease para Windows." />
+    <link rel="icon" href="/bulky.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Martian+Mono:wght@400;500;600&display=swap" />
+    <style>
+      /* Landing de Bulky · misma familia visual que la app ("Carpeta"): neutros fríos de funda de plástico,
+         Archivo estrecho para titulares, Martian Mono para códigos, y los seis colores de dominio como acento. */
+      :root {
+        --bg: #ECEDEF; --surface: #FBFBFC; --surface-2: #F1F2F4; --ink: #17181C; --muted: #5F636B;
+        --line: #DCDEE2; --line-2: #C3C6CC; --acc: #2E7D4F; --on-acc: #FFFFFF;
+        --fury: #D93636; --calm: #1E9A5A; --mind: #2C72D6; --body: #E8761C; --chaos: #8445D6; --order: #C99A00;
+        --f-body: "Archivo", "Segoe UI", system-ui, sans-serif;
+        --f-mono: "Martian Mono", Consolas, monospace;
+        --shadow: 0 18px 40px rgba(20, 22, 28, .12);
+        color-scheme: light;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #141518; --surface: #1C1D21; --surface-2: #24262B; --ink: #ECEDF0; --muted: #9A9EA7;
+          --line: #2E3036; --line-2: #3D4048; --acc: #5DBB86; --on-acc: #0F1411;
+          --fury: #F2625B; --calm: #4CCB85; --mind: #62A0F2; --body: #F59447; --chaos: #AC80EE; --order: #E6C341;
+          --shadow: 0 18px 40px rgba(0, 0, 0, .45);
+          color-scheme: dark;
+        }
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 var(--f-body); }
+      a { color: inherit; }
+      .wrap { max-width: 1120px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); }
+      .mono { font-family: var(--f-mono); }
+      h1, h2, h3 { margin: 0; font-stretch: 78%; text-wrap: balance; letter-spacing: -.005em; }
+      p { margin: 0; }
+      .stripe { display: flex; height: 6px; }
+      .stripe i { flex: 1; }
+      .stripe i:nth-child(1) { background: var(--fury); } .stripe i:nth-child(2) { background: var(--body); } .stripe i:nth-child(3) { background: var(--order); }
+      .stripe i:nth-child(4) { background: var(--calm); } .stripe i:nth-child(5) { background: var(--mind); } .stripe i:nth-child(6) { background: var(--chaos); }
+
+      /* Cabecera */
+      header.top { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+      .top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; }
+      .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-stretch: 75%; font-size: 1.45rem; text-decoration: none; }
+      .brand img { width: 32px; height: 32px; }
+      .top nav { display: flex; gap: 22px; align-items: center; font-size: .92rem; }
+      .top nav a { text-decoration: none; color: var(--muted); font-weight: 600; }
+      .top nav a:hover { color: var(--ink); }
+      .pill { font: 600 .66rem var(--f-mono); letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; border: 1px solid var(--line-2); color: var(--muted); }
+
+      /* Botones */
+      .btn { display: inline-flex; align-items: center; gap: 10px; font: 700 1rem var(--f-body); text-decoration: none; padding: 13px 20px; border-radius: 8px; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink);
+        box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 2px 0 rgba(0,0,0,.08); transition: transform .12s ease, box-shadow .12s ease; }
+      .btn:hover { transform: translateY(-1px); }
+      .btn:active { transform: translateY(1px); box-shadow: none; }
+      .btn:focus-visible { outline: 3px solid var(--acc); outline-offset: 3px; }
+      .btn.pri { background: var(--acc); color: var(--on-acc); border-color: transparent; box-shadow: 0 2px 0 rgba(0,0,0,.18); }
+      .btn[aria-disabled="true"] { opacity: .55; cursor: default; transform: none; box-shadow: none; }
+      .btn small { font: 600 .62rem var(--f-mono); letter-spacing: .05em; text-transform: uppercase; opacity: .8; }
+      .btn svg { width: 18px; height: 18px; flex: none; }
+
+      /* Hero */
+      .hero { padding-block: 72px 64px; }
+      .hero .wrap { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 48px; align-items: center; }
+      .kicker { display: inline-flex; gap: 8px; align-items: center; font: 600 .72rem var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+      .kicker b { color: var(--on-acc); background: var(--acc); padding: 3px 8px; border-radius: 4px; font-weight: 600; }
+      .hero h1 { font-size: clamp(2.6rem, 6vw, 4.4rem); line-height: .98; font-weight: 800; margin: 18px 0 18px; }
+      .hero h1 em { font-style: normal; color: var(--acc); }
+      .hero .lead { font-size: 1.15rem; color: var(--muted); max-width: 52ch; }
+      .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+      .fine { margin-top: 14px; font-size: .82rem; color: var(--muted); }
+
+      /* Montón de cartas con Gromp encima (sin capturas de la app) */
+      .pile { position: relative; aspect-ratio: 1 / .95; max-width: 460px; width: 100%; justify-self: center; }
+      .pile .card { position: absolute; width: 46%; aspect-ratio: 5 / 7; left: 27%; top: 18%; border-radius: 12px; border: 3px solid rgba(0,0,0,.18);
+        background: linear-gradient(155deg, color-mix(in srgb, var(--c) 78%, #fff) 0%, var(--c) 48%, color-mix(in srgb, var(--c) 62%, #000) 100%); box-shadow: var(--shadow); }
+      .pile .card::after { content: ""; position: absolute; inset: 9%; border-radius: 8px; border: 2px solid rgba(255,255,255,.35); }
+      .pile .card:nth-child(1) { --c: var(--mind); transform: rotate(-24deg) translate(-38%, 6%); }
+      .pile .card:nth-child(2) { --c: var(--chaos); transform: rotate(-12deg) translate(-20%, -2%); }
+      .pile .card:nth-child(3) { --c: var(--calm); transform: rotate(14deg) translate(22%, -2%); }
+      .pile .card:nth-child(4) { --c: var(--order); transform: rotate(26deg) translate(40%, 8%); }
+      .pile .card:nth-child(5) { --c: var(--body); transform: rotate(3deg) translate(2%, 6%); }
+      .pile .card:nth-child(6) { --c: var(--fury); transform: rotate(-4deg) translate(-2%, 10%); }
+      .pile .gromp { position: absolute; width: 58%; left: 21%; bottom: -4%; filter: drop-shadow(0 14px 18px rgba(0,0,0,.28)); animation: bob 3.2s ease-in-out infinite; }
+      @keyframes bob { 50% { transform: translateY(-8px); } }
+
+      /* Código de ejemplo */
+      .code-note { display: inline-flex; align-items: center; gap: 12px; margin-top: 22px; padding: 10px 14px; border: 1px dashed var(--line-2); border-radius: 8px; background: var(--surface); font-size: .9rem; }
+      .code-note .k { font: 600 1.15rem var(--f-mono); letter-spacing: .08em; }
+      .code-note .arrow { color: var(--muted); }
+
+      /* Secciones */
+      section { padding-block: 72px; }
+      .sec-head { display: flex; justify-content: space-between; align-items: end; gap: 20px; flex-wrap: wrap; margin-bottom: 30px; }
+      .sec-head h2 { font-size: clamp(1.9rem, 4vw, 2.6rem); font-weight: 800; line-height: 1.02; }
+      .sec-head p { color: var(--muted); max-width: 46ch; }
+      .eyebrow { display: block; font: 600 .7rem var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+
+      .features { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--surface); }
+      .feat { padding: 26px 24px 28px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
+      .feat:nth-child(3n) { border-right: 0; }
+      .feat:nth-last-child(-n+3) { border-bottom: 0; }
+      .feat .dot { width: 12px; height: 12px; border-radius: 3px; background: var(--c); }
+      .feat h3 { font-size: 1.3rem; font-weight: 800; }
+      .feat p { color: var(--muted); font-size: .95rem; }
+      .feat .mono { font-size: .82rem; color: var(--ink); }
+
+      .platforms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+      .plat { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 26px; display: flex; flex-direction: column; gap: 14px; }
+      .plat header { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+      .plat h3 { font-size: 1.5rem; font-weight: 800; }
+      .state { font: 600 .66rem var(--f-mono); letter-spacing: .06em; text-transform: uppercase; padding: 4px 9px; border-radius: 4px; }
+      .state.on { background: color-mix(in srgb, var(--acc) 16%, transparent); color: var(--acc); }
+      .state.soon { background: var(--surface-2); color: var(--muted); border: 1px solid var(--line-2); }
+      .plat ul { margin: 0; padding-left: 18px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; font-size: .95rem; }
+      .plat .btn { align-self: flex-start; margin-top: auto; }
+      .plat.dim { background: transparent; border-style: dashed; }
+
+      .note { display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: start; border: 1px solid color-mix(in srgb, var(--order) 50%, var(--line)); background: color-mix(in srgb, var(--order) 9%, var(--surface)); border-radius: 12px; padding: 22px 24px; }
+      .note .badge { font: 700 .7rem var(--f-mono); letter-spacing: .06em; text-transform: uppercase; background: var(--order); color: #1B1600; padding: 5px 9px; border-radius: 4px; }
+      .note h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 6px; }
+      .note p { color: var(--muted); }
+      .note p + p { margin-top: 8px; }
+
+      footer { border-top: 1px solid var(--line); padding-block: 32px 40px; color: var(--muted); font-size: .84rem; }
+      footer .wrap { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
+      footer p { max-width: 62ch; }
+      footer .brand { font-size: 1.1rem; color: var(--ink); }
+      footer .brand img { width: 24px; height: 24px; }
+
+      @media (max-width: 860px) {
+        .hero { padding-block: 40px 48px; }
+        .hero .wrap { grid-template-columns: 1fr; gap: 36px; }
+        .pile { max-width: 340px; }
+        .features { grid-template-columns: 1fr 1fr; }
+        .feat:nth-child(3n) { border-right: 1px solid var(--line); }
+        .feat:nth-child(2n) { border-right: 0; }
+        .feat:nth-last-child(-n+3) { border-bottom: 1px solid var(--line); }
+        .feat:nth-last-child(-n+2) { border-bottom: 0; }
+        .platforms { grid-template-columns: 1fr; }
+        .top nav a.hide-sm { display: none; }
+      }
+      @media (max-width: 560px) {
+        .features { grid-template-columns: 1fr; }
+        .feat { border-right: 0 !important; border-bottom: 1px solid var(--line) !important; }
+        .feat:last-child { border-bottom: 0 !important; }
+        .note { grid-template-columns: 1fr; }
+        section { padding-block: 52px; }
+        .top nav { gap: 14px; }
+      }
+      @media (max-width: 420px) { .top .pill { display: none; } .kicker { flex-wrap: wrap; } }
+      @media (prefers-reduced-motion: reduce) { .pile .gromp { animation: none; } .btn { transition: none; } html { scroll-behavior: auto; } }
+    </style>
+  </head>
+  <body>
+    <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <header class="top">
+      <div class="wrap">
+        <a class="brand" href="#"><img src="/bulky.svg" alt="" />Bulky <span class="pill">Prerelease</span></a>
+        <nav aria-label="Secciones">
+          <a href="#funciones" class="hide-sm">Funciones</a>
+          <a href="#descargar">Descargar</a>
+          <a href="https://github.com/SamirElKharrat/Bulky" target="_blank" rel="noopener">GitHub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="hero">
+        <div class="wrap">
+          <div>
+            <span class="kicker"><b>v0.2.0 · prerelease</b> Gratis · Sin cuentas</span>
+            <h1>Tu bulk de Riftbound, <em>ordenado.</em></h1>
+            <p class="lead">Bulky es una app para apuntar todas tus cartas de Riftbound en un momento, separarlas como las tienes en casa, saber cuánto valen en Cardmarket y montar mazos con lo que ya tienes.</p>
+            <div class="code-note" aria-label="Ejemplo de código de carta">
+              <span class="k">0704</span><span class="arrow">→</span><span>carta <b class="mono">070</b> de la expansión <b class="mono">4</b>, Vendetta</span>
+            </div>
+            <div class="cta">
+              <a class="btn pri" href="https://github.com/SamirElKharrat/Bulky/releases/latest" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 5.5 10 4.5v7H3zm8-1.2L21 3v8.5H11zM3 12.5h7v7L3 18.5zm8 0h10V21l-10-1.3z"/></svg>
+                Descargar para Windows
+              </a>
+              <span class="btn" aria-disabled="true">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 3v13h10V5zm5 14.2a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg>
+                Android <small>Próximamente</small>
+              </span>
+            </div>
+            <p class="fine">Windows 10 y 11 · unos 4 MB · Versión preliminar: puede tener fallos.</p>
+          </div>
+          <div class="pile" aria-hidden="true">
+            <span class="card"></span><span class="card"></span><span class="card"></span><span class="card"></span><span class="card"></span><span class="card"></span>
+            <img class="gromp" src="/bulky.svg" alt="" />
+          </div>
+        </div>
+      </div>
+
+      <section id="funciones">
+        <div class="wrap">
+          <div class="sec-head">
+            <div>
+              <span class="eyebrow">Qué hace</span>
+              <h2>De la caja de zapatos<br />a una colección de verdad</h2>
+            </div>
+            <p>Pensada para sesiones largas apuntando cartas: escribir, Intro y siguiente. Todo se guarda en tu ordenador.</p>
+          </div>
+          <div class="features">
+            <article class="feat" style="--c: var(--fury)">
+              <span class="dot"></span>
+              <h3>Añade cartas en segundos</h3>
+              <p>Escribe el código, comprueba la carta y pulsa Intro. Idioma (EN, KO, CN, FR) y foil incluidos. También puedes pegar una lista entera.</p>
+            </article>
+            <article class="feat" style="--c: var(--body)">
+              <span class="dot"></span>
+              <h3>Colecciones como en casa</h3>
+              <p>Carpetas, cajas, cartas para cambio: cada una con su nombre, color y foto. Mueve cartas entre ellas en bloque.</p>
+            </article>
+            <article class="feat" style="--c: var(--order)">
+              <span class="dot"></span>
+              <h3>Busca cualquier lista</h3>
+              <p>Pega lo que te pide un amigo o la lista de un mazo y mira al momento qué tienes, qué te falta y en qué colección está.</p>
+            </article>
+            <article class="feat" style="--c: var(--calm)">
+              <span class="dot"></span>
+              <h3>Mazos con lo que tienes</h3>
+              <p>Constructor con reglas del juego y aviso de las cartas que te faltan. Importa y exporta de Piltover Archive, RiftAtlas y TCG Arena.</p>
+            </article>
+            <article class="feat" style="--c: var(--mind)">
+              <span class="dot"></span>
+              <h3>Precios de Cardmarket</h3>
+              <p>Mínimo, tendencia o media de 30 días, en normal y foil. Sabes lo que vale cada carta, cada colección y cada mazo.</p>
+            </article>
+            <article class="feat" style="--c: var(--chaos)">
+              <span class="dot"></span>
+              <h3>Listas de venta con enlace</h3>
+              <p>Pon a la venta lo que te sobra con tu precio o el de Cardmarket y comparte un enlace para que el comprador marque lo que quiere.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="descargar">
+        <div class="wrap">
+          <div class="sec-head">
+            <div>
+              <span class="eyebrow">Descargar</span>
+              <h2>Empieza en PC,<br />sigue en el móvil</h2>
+            </div>
+            <p>La versión de escritorio ya se puede usar. La de Android está en camino.</p>
+          </div>
+          <div class="platforms">
+            <article class="plat">
+              <header><h3>Windows</h3><span class="state on">Prerelease</span></header>
+              <ul>
+                <li>Todas las funciones: colecciones, buscador, mazos, precios y listas de venta.</li>
+                <li>Tus datos se quedan en tu PC, con copia de seguridad en un archivo.</li>
+                <li>Windows 10 y 11.</li>
+              </ul>
+              <a class="btn pri" href="https://github.com/SamirElKharrat/Bulky/releases/latest" target="_blank" rel="noopener">Descargar instalador</a>
+            </article>
+            <article class="plat dim">
+              <header><h3>Android</h3><span class="state soon">Próximamente</span></header>
+              <ul>
+                <li>Escanea las cartas con la cámara en lugar de escribir el código.</li>
+                <li>Lleva tu colección encima cuando vayas a cambiar o comprar.</li>
+              </ul>
+              <span class="btn" aria-disabled="true">Aún no disponible</span>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="wrap">
+          <div class="note">
+            <span class="badge">Prerelease</span>
+            <div>
+              <h3>Versión preliminar</h3>
+              <p>Bulky ya funciona, pero está en desarrollo: puede tener fallos y cambiar de una versión a otra. Haz copias de seguridad de vez en cuando desde Ajustes → Tus datos.</p>
+              <p>Al instalarla, Windows puede mostrar "Windows protegió su PC" porque la app aún no está firmada. Pulsa <b>Más información</b> y después <b>Ejecutar de todas formas</b>. Si encuentras un fallo, cuéntalo en <a href="https://github.com/SamirElKharrat/Bulky/issues" target="_blank" rel="noopener">GitHub</a>.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <a class="brand" href="#"><img src="/bulky.svg" alt="" />Bulky</a>
+        <p>Bulky es un proyecto de fans, gratuito y sin ánimo de lucro. No está hecho, respaldado ni patrocinado por Riot Games. Riftbound, League of Legends y todo lo relacionado son marcas registradas de Riot Games, Inc. Los precios vienen de los datos públicos de Cardmarket.</p>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -6,6 +6,7 @@ import { parseEntryKey, useStore, type Collection } from "../core/store";
 import { eur, priceOf, usePriceProfile, usePrices } from "../core/prices";
 import { CardFace, domainColor } from "../ui/CardTile";
 import { TYPE_ES, VARIANT_ES } from "../ui/icons";
+import { SEARCH_SHORTCUT } from "../core/web";
 
 const ALL = "__all";
 interface Copy { entry: string; coll: string; lang: Lang; foil: boolean; qty: number }
@@ -79,7 +80,7 @@ export function SearchView({ cat, openCard, focusKey }: { cat: Catalog; openCard
       <div className="page-head">
         <div>
           <h1>Buscar</h1>
-          <p>Encuentra cartas en tus colecciones: una suelta o una lista entera pegada. <span className="mono">Ctrl F</span> te trae aquí desde cualquier pantalla.</p>
+          <p>Encuentra cartas en tus colecciones: una suelta o una lista entera pegada. <span className="mono">{SEARCH_SHORTCUT}</span> te trae aquí desde cualquier pantalla.</p>
         </div>
         <div className="toggle" role="group" aria-label="Modo">
           <button aria-pressed={mode === "one"} onClick={() => setMode("one")}>Una carta</button>

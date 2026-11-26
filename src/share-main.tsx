@@ -12,7 +12,7 @@ function ShareApp() {
     const read = () => {
       const code = location.hash.replace(/^#/, "");
       if (!code) { setError("Este enlace no contiene ninguna lista."); return; }
-      decodeShare(code).then((d) => { setData(d); document.title = `${d.n} · Lista de venta`; }).catch(() => setError("No se pudo leer la lista. Comprueba que el enlace está completo."));
+      decodeShare(code).then((d) => { setError(null); setData(d); document.title = `${d.n} · Lista de venta`; }).catch(() => { setData(null); setError("No se pudo leer la lista. Comprueba que el enlace está completo."); });
     };
     read();
     window.addEventListener("hashchange", read);

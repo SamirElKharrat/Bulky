@@ -9,6 +9,5 @@ export default defineConfig({
   define: { __APP_VERSION__: JSON.stringify(pkg.version) },
   clearScreen: false,
   server: { port: 5173, strictPort: true },
-  // Dos páginas: la app (index.html) y la página pública de listas de venta (share.html)
-  build: { rollupOptions: { input: { main: "index.html", share: "share.html" } } },
+  // Solo la app de escritorio. La web pública (landing y listas de venta) se compila con vite.web.config.ts.
 });

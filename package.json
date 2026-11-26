@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "dev:web": "node scripts/web-cards.mjs && vite --config vite.web.config.ts",
+    "build:web": "node scripts/build-web.mjs",
     "preview": "vite preview",
     "import:cards": "node scripts/import-gallery.mjs",
     "import:icons": "node scripts/import-icons.mjs",

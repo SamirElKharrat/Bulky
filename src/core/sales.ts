@@ -52,16 +52,37 @@ async function pipe(bytes: Uint8Array, stream: CompressionStream | Decompression
   return new Uint8Array(await new Response(out).arrayBuffer());
 }
 
-export async function encodeShare(p: SharePayload): Promise<string> {
+/**
+ * Enlace corto (v2): solo [clave, idioma (+"*" si es foil), copias, precio en céntimos].
+ * El nombre y la imagen los pone la web con su listado de cartas (cards.json).
+ */
+export type ShortRow = [string, string, number, number];
+export interface ShortPayload { v: 2; n: string; d: string; r: ShortRow[] }
+
+export function toShort(p: SharePayload): ShortPayload {
+  return { v: 2, n: p.n, d: p.d.slice(0, 10), r: p.r.map((x) => [x[0], `${x[3]}${x[4] ? "*" : ""}`, x[5], Math.round(x[6] * 100)]) };
+}
+
+export async function encodeShare(p: SharePayload | ShortPayload): Promise<string> {
   const json = new TextEncoder().encode(JSON.stringify(p));
   return toB64Url(await pipe(json, new CompressionStream("deflate-raw")));
 }
 
-export async function decodeShare(code: string): Promise<SharePayload> {
+/** Lee un enlace (corto o antiguo) y lo devuelve completo, con nombres e imágenes. */
+export async function decodeShare(code: string, cardsUrl = "/cards.json"): Promise<SharePayload> {
   const bytes = await pipe(fromB64Url(code), new DecompressionStream("deflate-raw"));
-  const p = JSON.parse(new TextDecoder().decode(bytes)) as SharePayload;
-  if (p.v !== 1 || !Array.isArray(p.r)) throw new Error("Enlace no válido");
-  return p;
+  const p = JSON.parse(new TextDecoder().decode(bytes)) as SharePayload | ShortPayload;
+  if (!Array.isArray(p.r)) throw new Error("Enlace no válido");
+  if (p.v === 1) return p;
+  if (p.v !== 2) throw new Error("Enlace no válido");
+  const cards = (await fetch(cardsUrl).then((r) => r.json()).catch(() => ({}))) as Record<string, [string, string]>;
+  return {
+    v: 1, n: p.n, d: p.d,
+    r: p.r.map(([key, lf, qty, cents]) => {
+      const [name, img] = cards[key] ?? [key, ""];
+      return [key, name, img, lf.replace("*", ""), lf.endsWith("*") ? 1 : 0, qty, cents / 100];
+    }),
+  };
 }
 
 /** Id de imagen del CDN de Riot a partir de la URL completa (para que el enlace sea corto). */
